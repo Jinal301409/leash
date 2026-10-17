@@ -59,6 +59,13 @@ export default function DecisionCard({ entry, onAct }) {
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-start gap-4">
+        {entry.image && (
+            <img
+              src={entry.image}
+              alt={entry.item}
+              className="h-20 w-20 rounded-xl object-cover"
+            />
+          )}
           <motion.div
             initial={{ scale: 0, rotate: -45 }}
             animate={{ scale: 1, rotate: 0 }}
@@ -72,7 +79,10 @@ export default function DecisionCard({ entry, onAct }) {
               {look.label}
             </p>
             <h2 className="mt-1 text-xl font-bold">{entry.item}</h2>
-            <p className="text-sm text-slate-400">Category: {entry.category}</p>
+                <p className="text-sm text-slate-400">
+              Category: {entry.category}
+              {entry.store ? ` · sold by ${entry.store}` : ""}
+            </p>
           </div>
         </div>
         <p className="text-3xl font-extrabold">${Number(entry.price).toFixed(2)}</p>

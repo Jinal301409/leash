@@ -132,7 +132,7 @@ export default function App() {
         </motion.div>
 
         <footer className="mt-12 text-center text-xs text-slate-500">
-          Built with PayPal Sandbox, Google Gemini and AG Grid. No real money is ever used.
+          Built with PayPal Sandbox, Google Gemini, Channel3 and AG Grid. No real money is ever used.
         </footer>
       </main>
     </>
