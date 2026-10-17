@@ -1,124 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Leash: a spending leash for AI agents</title>
-  <style>
-    body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; color: #1f2937; }
-    h1 { margin-bottom: 0; }
-    .tagline { color: #6b7280; margin-top: 0.25rem; }
-    .rules { background: #f3f4f6; padding: 0.75rem 1rem; border-radius: 8px; margin: 1rem 0; }
-    .row { display: flex; gap: 0.5rem; }
-    input[type=text] { flex: 1; padding: 0.7rem; font-size: 1rem; border: 1px solid #d1d5db; border-radius: 8px; }
-    button { padding: 0.6rem 1rem; border: 0; border-radius: 8px; background: #2563eb; color: white; font-size: 0.95rem; cursor: pointer; }
-    button.secondary { background: #6b7280; }
-    a.pay { background: #16a34a; color: white; padding: 0.45rem 0.8rem; border-radius: 8px; text-decoration: none; font-size: 0.9rem; }
-    #message { margin: 1rem 0; min-height: 1.5rem; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
-    .badge { padding: 0.15rem 0.5rem; border-radius: 999px; font-weight: 600; font-size: 0.8rem; }
-    .ALLOW { background: #dcfce7; color: #166534; }
-    .ASK { background: #fef3c7; color: #92400e; }
-    .BLOCK { background: #fee2e2; color: #991b1b; }
-  </style>
-</head>
-<body>
-  <h1>Leash</h1>
-  <p class="tagline">Let your AI agent shop, with rules it can't break.</p>
-
-  <div class="rules" id="rules">Loading rules...</div>
-
-  <div class="row">
-    <input type="text" id="request" placeholder="Try: Get me a notebook under $15">
-    <button id="send">Send to agent</button>
-  </div>
-  <div id="message"></div>
-
-  <h2>Ledger</h2>
-  <table>
-    <thead>
-      <tr><th>Time</th><th>Item</th><th>Price</th><th>Decision</th><th>Status</th><th>Why</th><th>Action</th></tr>
-    </thead>
-    <tbody id="ledger"></tbody>
-  </table>
-
-  <script>
-    function esc(value) {
-      return String(value ?? "").replace(/[&<>"']/g, function (c) {
-        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
-      });
-    }
-
-    async function loadRules() {
-      const rules = await (await fetch("/api/rules")).json();
-      document.getElementById("rules").textContent =
-        "Rules: daily limit $" + rules.daily_limit.toFixed(2) +
-        " | ask me above $" + rules.ask_above.toFixed(2) +
-        " | blocked: " + rules.blocked_categories.join(", ");
-    }
-
-    function actionCell(entry) {
-      if (entry.status === "WAITING_FOR_YOU") {
-        return '<button onclick="act(\'approve\', \'' + entry.id + '\')">Approve</button> ' +
-               '<button class="secondary" onclick="act(\'decline\', \'' + entry.id + '\')">Decline</button>';
-      }
-      if (entry.status === "AWAITING_PAYMENT" && entry.approve_link) {
-        return '<a class="pay" href="' + esc(entry.approve_link) + '">Pay with PayPal</a>';
-      }
-      return "";
-    }
-
-    async function loadLedger() {
-      const data = await (await fetch("/api/ledger")).json();
-      const body = document.getElementById("ledger");
-      body.innerHTML = data.entries.map(function (e) {
-        return "<tr>" +
-          "<td>" + esc(e.created.replace("T", " ")) + "</td>" +
-          "<td>" + esc(e.item) + "<br><small>" + esc(e.category) + "</small></td>" +
-          "<td>$" + Number(e.price).toFixed(2) + "</td>" +
-          '<td><span class="badge ' + esc(e.decision) + '">' + esc(e.decision) + "</span></td>" +
-          "<td>" + esc(e.status.replaceAll("_", " ")) + "</td>" +
-          "<td>" + esc(e.reason) + "</td>" +
-          "<td>" + actionCell(e) + "</td>" +
-          "</tr>";
-      }).join("");
-    }
-
-    async function send() {
-      const input = document.getElementById("request");
-      const message = document.getElementById("message");
-      const text = input.value.trim();
-      if (!text) return;
-      message.textContent = "Asking the agent...";
-      const res = await fetch("/api/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: text })
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        message.textContent = data.error || "Something went wrong.";
-      } else {
-        message.textContent = "Agent proposed " + data.item + " ($" + Number(data.price).toFixed(2) +
-          "). Leash says " + data.decision + ": " + data.reason;
-        input.value = "";
-      }
-      loadLedger();
-    }
-
-    async function act(kind, id) {
-      await fetch("/api/" + kind + "/" + id, { method: "POST" });
-      loadLedger();
-    }
-
-    document.getElementById("send").addEventListener("click", send);
-    document.getElementById("request").addEventListener("keydown", function (e) {
-      if (e.key === "Enter") send();
-    });
-
-    loadRules();
-    loadLedger();
-  </script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+    <script type="module" crossorigin src="/assets/index-B3GIBTQ1.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-CY4OO4fw.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>

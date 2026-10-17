@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+body {
+  background: #020617;
+  color: #e2e8f0;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+}
+
+.aurora {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  width: 55vmax;
+  height: 55vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.35;
+  animation: drift 18s ease-in-out infinite alternate;
+}
+.aurora::before {
+  background: radial-gradient(circle, #2563eb, transparent 60%);
+  top: -20vmax;
+  left: -15vmax;
+}
+.aurora::after {
+  background: radial-gradient(circle, #10b981, transparent 60%);
+  bottom: -25vmax;
+  right: -15vmax;
+  animation-delay: -9s;
+}
+@keyframes drift {
+  to { transform: translate(8vmax, 6vmax) scale(1.15); }
+}
+
+.glass {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+.pulse-glow { animation: pulse-glow 2s infinite; }
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.5); }
+  50% { box-shadow: 0 0 0 12px rgba(56, 189, 248, 0); }
+}
