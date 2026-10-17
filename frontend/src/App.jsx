@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { ShieldCheck } from "lucide-react";
-import { act, getLedger, getRules, sendRequest } from "./api";
+import { act, getLedger, getRules, resetDemo, sendRequest } from "./api";
 import Splash from "./components/Splash";
 import RequestBox from "./components/RequestBox";
 import DecisionCard from "./components/DecisionCard";
@@ -54,7 +54,16 @@ export default function App() {
       setError(e.message);
     }
   }
-
+  async function handleReset() {
+    if (!window.confirm("Clear all entries and reset today's budget?")) return;
+    try {
+      await resetDemo();
+      setLatestId(null);
+      await refresh();
+    } catch (e) {
+      setError(e.message);
+    }
+  }
   const latest = entries.find((e) => e.id === latestId);
 
   return (
@@ -75,9 +84,17 @@ export default function App() {
             </div>
             <span className="text-xl font-bold tracking-tight">Leash</span>
           </div>
-          <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs font-medium text-amber-200">
-            PayPal Sandbox · test money only
-          </span>
+                    <div className="flex items-center gap-3">
+            <button
+              onClick={handleReset}
+              className="rounded-full border border-slate-600 px-3 py-1 text-xs font-medium text-slate-300 hover:border-sky-400/60 hover:text-white"
+            >
+              Reset demo
+            </button>
+            <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 text-xs font-medium text-amber-200">
+              PayPal Sandbox · test money only
+            </span>
+          </div>
         </motion.header>
 
         <motion.section

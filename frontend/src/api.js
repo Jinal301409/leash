@@ -19,3 +19,4 @@ export const sendRequest = (text) =>
     body: JSON.stringify({ text }),
   });
 export const act = (kind, id) => call(`/api/${kind}/${id}`, { method: "POST" });
+export const resetDemo = () => call("/api/reset", { method: "POST" });

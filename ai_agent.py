@@ -10,12 +10,12 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 MODEL = "gemini-3.8-flash"
 
-SYSTEM_PROMPT = """You are a shopping assistant. Turn the user's request into ONE purchase proposal.
+SYSTEM_PROMPT = """You are a shopping assistant. Turn the user's request into a product search.
 Reply with ONLY a JSON object and nothing else, using exactly these keys:
-- "item": short product name (string)
-- "price": a realistic price in US dollars (number)
+- "search_query": 2 to 6 words describing the product to search for (string)
+- "max_price": the most the user wants to pay in US dollars (number), or null if no budget is stated
 - "category": one of "stationery", "books", "gifts", "electronics", "groceries", "clothing", "gambling", "other"
-- "note": one short sentence explaining your choice
+- "note": one short sentence explaining what you will look for
 If the request is not a purchase, reply with {"error": "short reason"}."""
 
 
@@ -35,7 +35,7 @@ def ask_model(user_request):
     return None
 
 
-def propose_purchase(user_request):
+def understand_request(user_request):
     text = ask_model(user_request)
     if text is None:
         return {"error": "The AI is too busy right now. Please try again in a moment."}
@@ -51,9 +51,10 @@ def propose_purchase(user_request):
         return data
 
     try:
+        max_price = data.get("max_price")
         return {
-            "item": str(data["item"]),
-            "price": float(data["price"]),
+            "search_query": str(data["search_query"]),
+            "max_price": float(max_price) if max_price is not None else None,
             "category": str(data["category"]).lower(),
             "note": str(data.get("note", "")),
         }

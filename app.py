@@ -8,7 +8,7 @@ from flask_limiter.util import get_remote_address
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import ledger
-from ai_agent import propose_purchase
+from agent import propose_purchase
 from paypal_client import capture_order, create_order
 from rules import RULES, check_purchase
 
@@ -122,6 +122,10 @@ def paypal_cancel():
         ledger.update(entry["id"], status="CANCELLED")
     return redirect("/")
 
+@app.route("/api/reset", methods=["POST"])
+def reset_demo():
+    ledger.reset()
+    return jsonify({"ok": True})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

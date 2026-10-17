@@ -1,0 +1,19 @@
+[
+  {
+    "id": "6c6527c9",
+    "created": "2026-10-17T14:06:14",
+    "request": "Get me a notebook under $15",
+    "item": "Bound Lined Pages Notebook",
+    "price": 5.0,
+    "category": "stationery",
+    "note": "Looking for a paper notebook priced under $15. Found at fivebelow.com.",
+    "store": "fivebelow.com",
+    "image": "https://cdn.trychannel3.com/b7bac4b9-864e-44ee-ab10-e0e5251c958c?aid=01M54G2931C0PWBR7M451WV4AW&mid=FLYH",
+    "buy_url": "https://buy.trychannel3.com/XUEKlyt-FLYH-SQrayZ?o=01M142D2RK7VJQRF4SYGK9CY3M&aid=01M54G2931C0PWBR7M451WV4AW",
+    "decision": "ALLOW",
+    "reason": "Within all your rules.",
+    "status": "PAID",
+    "order_id": "0CB29739H66657338",
+    "approve_link": "https://www.sandbox.paypal.com/checkoutnow?token=0CB29739H66657338"
+  }
+]

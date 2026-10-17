@@ -27,9 +27,14 @@ const STATUS_COLOR = {
 
 function ItemCell({ data }) {
   return (
-    <div className="flex h-full flex-col justify-center leading-tight">
-      <span className="font-medium">{data.item}</span>
-      <span className="text-xs text-slate-400">{data.category}</span>
+    <div className="flex h-full min-w-0 flex-col justify-center leading-tight">
+      <span className="truncate font-medium" title={data.item}>
+        {data.item}
+      </span>
+      <span className="truncate text-xs text-slate-400">
+        {data.category}
+        {data.store ? ` · ${data.store}` : ""}
+      </span>
     </div>
   );
 }
@@ -134,6 +139,7 @@ export default function LedgerGrid({ entries, onAct }) {
             rowHeight={62}
             animateRows
             context={{ act: onAct }}
+            autoSizeStrategy={{ type: "fitGridWidth" }}
           />
         </div>
       )}

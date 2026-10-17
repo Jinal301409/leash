@@ -1,4 +1,4 @@
-from ai_agent import propose_purchase
+from agent import propose_purchase
 from rules import check_purchase
 
 requests_to_try = [

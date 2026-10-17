@@ -22,16 +22,23 @@ def _load():
             return json.load(f)
         except json.JSONDecodeError:
             return []
-
+def reset():
+    with lock:
+        _save([])
 
 def _save(entries):
     with open(FILE, "w", encoding="utf-8") as f:
         json.dump(entries, f, indent=2)
-
+def reset():
+    with lock:
+        _save([])
 
 def get_all():
     return list(reversed(_load()))
 
+def reset():
+    with lock:
+        _save([])
 
 def get(entry_id):
     for entry in _load():
@@ -39,13 +46,18 @@ def get(entry_id):
             return entry
     return None
 
+def reset():
+    with lock:
+        _save([])
 
 def find_by_order(order_id):
     for entry in _load():
         if entry["order_id"] == order_id:
             return entry
     return None
-
+def reset():
+    with lock:
+        _save([])
 
 def add(request_text, purchase, decision):
     entry = {
@@ -71,6 +83,9 @@ def add(request_text, purchase, decision):
         _save(entries)
     return entry
 
+def reset():
+    with lock:
+        _save([])
 
 def update(entry_id, **changes):
     with lock:
@@ -80,6 +95,9 @@ def update(entry_id, **changes):
                 entry.update(changes)
         _save(entries)
 
+def reset():
+    with lock:
+        _save([])
 
 def spent_today():
     today = datetime.now().date().isoformat()
@@ -88,3 +106,7 @@ def spent_today():
         if entry["created"].startswith(today) and entry["status"] in ("PAID", "AWAITING_PAYMENT"):
             total += entry["price"]
     return total
+
+def reset():
+    with lock:
+        _save([])
