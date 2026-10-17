@@ -18,7 +18,11 @@ def get_access_token():
     return response.json()["access_token"]
 
 
-def create_order(purchase):
+def create_order(
+    purchase,
+    return_url="https://example.com/return",
+    cancel_url="https://example.com/cancel",
+):
     token = get_access_token()
     body = {
         "intent": "CAPTURE",
@@ -34,8 +38,8 @@ def create_order(purchase):
         "payment_source": {
             "paypal": {
                 "experience_context": {
-                    "return_url": "https://example.com/return",
-                    "cancel_url": "https://example.com/cancel",
+                    "return_url": return_url,
+                    "cancel_url": cancel_url,
                     "user_action": "PAY_NOW",
                     "shipping_preference": "NO_SHIPPING",
                 }
