@@ -1,13 +1,28 @@
+import os
+
 import requests
+from dotenv import load_dotenv
 from flask import Flask, jsonify, redirect, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import ledger
 from ai_agent import propose_purchase
 from paypal_client import capture_order, create_order
 from rules import RULES, check_purchase
 
+load_dotenv()
+
 app = Flask(__name__, static_folder="static", static_url_path="")
-BASE = "http://localhost:5000"
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
+limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
+BASE = os.getenv("BASE_URL", "http://localhost:5000")
+
+
+@app.errorhandler(429)
+def too_many_requests(error):
+    return jsonify({"error": "Too many requests. Please wait a minute and try again."}), 429
 
 
 @app.route("/")
@@ -43,6 +58,7 @@ def start_payment(entry):
 
 
 @app.route("/api/request", methods=["POST"])
+@limiter.limit("8 per minute;80 per day")
 def handle_request():
     text = (request.get_json(silent=True) or {}).get("text", "").strip()
     if not text:
