@@ -1,0 +1,6 @@
+{
+  "name": "Leash",
+  "description": "A spending leash for AI agents. Guardrails, daily budgets, and approval thresholds before AI agents spend through PayPal.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

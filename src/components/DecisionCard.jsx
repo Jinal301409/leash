@@ -1,0 +1,218 @@
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import {
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  ListFilter,
+  ShieldAlert,
+  ShieldCheck,
+  ShieldX,
+  XCircle,
+} from "lucide-react";
+
+const LOOKS = {
+  ALLOW: {
+    icon: ShieldCheck,
+    label: "Allowed by your rules",
+    border: "border-emerald-400/40",
+    glow: "shadow-emerald-500/20",
+    text: "text-emerald-300",
+    bg: "bg-emerald-500/15",
+  },
+  ASK: {
+    icon: ShieldAlert,
+    label: "Needs your approval",
+    border: "border-amber-400/40",
+    glow: "shadow-amber-500/20",
+    text: "text-amber-300",
+    bg: "bg-amber-500/15",
+  },
+  BLOCK: {
+    icon: ShieldX,
+    label: "Blocked by your rules",
+    border: "border-rose-400/40",
+    glow: "shadow-rose-500/20",
+    text: "text-rose-300",
+    bg: "bg-rose-500/15",
+  },
+};
+
+export default function DecisionCard({ entry, onAct }) {
+  const [busy, setBusy] = useState(false);
+  const [showTrace, setShowTrace] = useState(true);
+  const look = LOOKS[entry.decision] || LOOKS.ASK;
+  const Icon = look.icon;
+
+  async function run(kind) {
+    setBusy(true);
+    try {
+      await onAct(kind, entry.id);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const blocked = entry.status === "BLOCKED";
+  const trace = entry.trace || [];
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1, x: blocked ? [0, -10, 10, -8, 8, 0] : 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{
+        default: { type: "spring", stiffness: 220, damping: 20 },
+        x: { duration: 0.5 },
+      }}
+      className={`glass rounded-2xl border p-6 shadow-xl ${look.border} ${look.glow}`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          {entry.image && (
+            <img
+              src={entry.image}
+              alt={entry.item}
+              className="h-20 w-20 rounded-xl object-cover border border-slate-700/60"
+            />
+          )}
+          <motion.div
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.15, type: "spring", stiffness: 200, damping: 10 }}
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl ${look.bg}`}
+          >
+            <Icon className={`h-8 w-8 ${look.text}`} />
+          </motion.div>
+          <div>
+            <p className={`text-sm font-semibold uppercase tracking-wide ${look.text}`}>
+              {look.label}
+            </p>
+            <h2 className="mt-1 text-xl font-bold text-white">{entry.item}</h2>
+            <p className="text-sm text-slate-400">
+              Category: <span className="font-medium text-slate-300">{entry.category}</span>
+              {entry.store ? ` · sold by ${entry.store}` : ""}
+            </p>
+          </div>
+        </div>
+        <p className="text-3xl font-extrabold text-white">${Number(entry.price).toFixed(2)}</p>
+      </div>
+
+      <p className="mt-4 rounded-lg bg-slate-900/60 px-4 py-3 text-sm text-slate-200 border border-slate-800">
+        <span className="font-semibold text-slate-100">Why: </span>
+        {entry.reason}
+      </p>
+      {entry.note && (
+        <p className="mt-2 text-xs italic text-slate-500">Agent's note: {entry.note}</p>
+      )}
+
+      {/* --- Rule Trace Section --- */}
+      {trace.length > 0 && (
+        <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950/40 p-3.5">
+          <div
+            onClick={() => setShowTrace(!showTrace)}
+            className="flex items-center justify-between cursor-pointer select-none"
+          >
+            <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <ListFilter className="h-4 w-4 text-sky-400" />
+              <span>Rule Trace Audit ({trace.filter((t) => t.passed).length}/{trace.length} passed)</span>
+            </div>
+            <button
+              type="button"
+              className="text-slate-400 hover:text-white p-0.5 rounded transition"
+            >
+              {showTrace ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+          </div>
+
+          <AnimatePresence>
+            {showTrace && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mt-3 space-y-2 overflow-hidden border-t border-slate-800/80 pt-2.5"
+              >
+                {trace.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-start gap-2.5 text-xs text-slate-300"
+                  >
+                    {item.passed ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-rose-400 shrink-0 mt-0.5" />
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <span className={`font-semibold ${item.passed ? "text-slate-200" : "text-rose-300"}`}>
+                        {item.label}:
+                      </span>{" "}
+                      <span className="text-slate-400">{item.detail}</span>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Action Buttons */}
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        {entry.status === "WAITING_FOR_YOU" && (
+          <>
+            <motion.button
+              disabled={busy}
+              onClick={() => run("approve")}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-slate-950 hover:bg-emerald-400 transition disabled:opacity-60"
+            >
+              Approve
+            </motion.button>
+            <motion.button
+              disabled={busy}
+              onClick={() => run("decline")}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-lg border border-slate-600 px-5 py-2.5 text-sm font-semibold text-slate-200 hover:border-slate-500 hover:bg-slate-800/50 transition disabled:opacity-60"
+            >
+              Decline
+            </motion.button>
+          </>
+        )}
+
+        {entry.status === "AWAITING_PAYMENT" && entry.approve_link && (
+          <motion.a
+            href={entry.approve_link}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="pulse-glow flex items-center gap-2 rounded-lg bg-gradient-to-r from-sky-500 to-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-sky-500/25"
+          >
+            Pay with PayPal Sandbox <ExternalLink className="h-4 w-4" />
+          </motion.a>
+        )}
+
+        {entry.status === "PAID" && (
+          <motion.span
+            initial={{ scale: 0.6, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 250, damping: 12 }}
+            className="flex items-center gap-2 rounded-full bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-300 border border-emerald-500/30"
+          >
+            <Check className="h-4 w-4" /> Paid (sandbox)
+          </motion.span>
+        )}
+
+        {["DECLINED", "CANCELLED", "PAYPAL_ERROR", "PAYMENT_FAILED"].includes(entry.status) && (
+          <span className="text-sm text-slate-400">
+            Status: {entry.status.replaceAll("_", " ").toLowerCase()}
+          </span>
+        )}
+      </div>
+    </motion.div>
+  );
+}

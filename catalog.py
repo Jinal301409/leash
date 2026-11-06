@@ -1,5 +1,4 @@
 import os
-
 import requests
 from dotenv import load_dotenv
 
@@ -9,10 +8,15 @@ SEARCH_URL = "https://api.trychannel3.com/v1/search"
 
 
 def find_products(query, max_price=None):
+    api_key = os.getenv("CHANNEL3_API_KEY")
+    if not api_key:
+        # Fallback if no Channel3 key provided
+        return []
+
     response = requests.post(
         SEARCH_URL,
         headers={
-            "x-api-key": os.getenv("CHANNEL3_API_KEY"),
+            "x-api-key": api_key,
             "Content-Type": "application/json",
         },
         json={"query": query, "limit": 20},

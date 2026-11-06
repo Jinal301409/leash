@@ -1,0 +1,181 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: "Space Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Hardware Chassis Palette */
+    --chassis-bg: #050811;
+    --chassis-surface-1: #0c1220;
+    --chassis-surface-2: #111a2e;
+    --chassis-surface-3: #192640;
+    --chassis-border: #1e293b;
+    --chassis-border-strong: #334155;
+    --chassis-accent: #06b6d4;
+
+    /* Signal Indicators */
+    --signal-allow: #10b981;
+    --signal-ask: #f59e0b;
+    --signal-block: #ef4444;
+  }
+
+  body {
+    background-color: var(--chassis-bg);
+    color: #f1f5f9;
+    font-family: var(--font-body);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  code, pre, .font-mono, [data-mono="true"] {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* Sharp Industrial Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #070c18;
+  border-left: 1px solid #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Rotating Blueprint Radar Watermark (Atmosphere) */
+.blueprint-watermark {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 0.035;
+}
+
+.blueprint-watermark svg {
+  width: 140vmax;
+  height: 140vmax;
+  transform-origin: center center;
+  animation: radar-rotate 120s linear infinite;
+}
+
+@keyframes radar-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blueprint-watermark svg {
+    animation: none;
+  }
+}
+
+/* Hardware Surface Utilities */
+.chassis-panel {
+  background-color: var(--chassis-surface-1);
+  border: 1px solid var(--chassis-border);
+  border-radius: 0px;
+}
+
+.chassis-panel-raised {
+  background-color: var(--chassis-surface-2);
+  border: 1px solid var(--chassis-border-strong);
+  border-radius: 0px;
+}
+
+.chassis-well {
+  background-color: #070c18;
+  border: 1px solid #162032;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+  border-radius: 0px;
+}
+
+/* Hardware Button Tactile Press */
+.hardware-key {
+  position: relative;
+  border: 1px solid var(--chassis-border-strong);
+  background-color: var(--chassis-surface-2);
+  transition: all 120ms ease;
+  border-radius: 0px;
+}
+.hardware-key:hover {
+  background-color: var(--chassis-surface-3);
+  border-color: #475569;
+}
+.hardware-key:active {
+  transform: translateY(1px);
+  background-color: #0d1527;
+}
+
+.hardware-key-active {
+  background-color: var(--chassis-surface-3);
+  border-color: var(--chassis-accent) !important;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+}
+
+/* Sensor Lens Soft Glow */
+.sensor-lens {
+  position: relative;
+  border-radius: 50%;
+  box-shadow: inset 0 0 8px rgba(6, 182, 212, 0.8), 0 0 10px rgba(6, 182, 212, 0.4);
+}
+.sensor-lens::after {
+  content: "";
+  position: absolute;
+  top: 15%;
+  left: 20%;
+  width: 30%;
+  height: 30%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  filter: blur(1px);
+}
+
+/* LED Indicator Light Bulbs */
+.led-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  transition: all 200ms ease;
+}
+.led-indicator.off {
+  background-color: #1e293b;
+  opacity: 0.35;
+  box-shadow: none;
+}
+.led-indicator.lit-allow {
+  background-color: #10b981;
+  box-shadow: 0 0 8px #10b981;
+}
+.led-indicator.lit-ask {
+  background-color: #f59e0b;
+  box-shadow: 0 0 8px #f59e0b;
+}
+.led-indicator.lit-block {
+  background-color: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+}
